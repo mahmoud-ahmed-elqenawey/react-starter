@@ -1,3 +1,6 @@
+import { useCustomAdd } from "@/hooks/useMutation";
+import { useCustomQuery } from "@/hooks/useQuery";
+import { Button } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // todo type
@@ -8,31 +11,9 @@ type Todo = {
 };
 
 const Todos = () => {
-  // Access the client
-  const queryClient = useQueryClient();
+  const { data, isPending, error } = useCustomQuery(["todos"], "todos?limit=3");
 
-  // Queries
-  const { data, isPending, error } = useQuery({
-    queryKey: ["todos"],
-    queryFn: async () => {
-      const response = await fetch("https://dummyjson.com/todos?limit=3");
-      return await response.json();
-    },
-  });
-
-  // Mutations
-  const addTodo = useMutation({
-    mutationFn: async (data: Todo) =>
-      await fetch("https://dummyjson.com/todos/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }),
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
-  });
+  const addTodo = useCustomAdd("todos/add", ["todos"]);
 
   if (isPending) return "Loading...";
 
@@ -46,7 +27,7 @@ const Todos = () => {
         ))}
       </ul>
 
-      <button
+      <Button
         onClick={() => {
           addTodo.mutate({
             id: Date.now(),
@@ -56,7 +37,7 @@ const Todos = () => {
         }}
       >
         Add Todo
-      </button>
+      </Button>
     </div>
   );
 };
