@@ -20,7 +20,7 @@ export const patch = async (endpoint: string, body: any) => {
   return res.data;
 };
 
-export const deleteItem = async (endpoint: string) => {
+export const remove = async (endpoint: string) => {
   const res = await axiosInstance.delete(endpoint);
   return res.data;
 };
